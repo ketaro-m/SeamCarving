@@ -153,5 +153,8 @@ Session.vim
 .netrwhist
 *~
 
+#figure examples
+example/
+
 # my local problem
 *Icon*
