@@ -19,6 +19,7 @@ package image;
  *
  *************************************************************************/
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Size;
@@ -32,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -322,12 +324,15 @@ public final class Picture implements ActionListener {
         pic.show();
     }
 
-    public void reshape(int w, int h) {
-        BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        //image = Imgproc.resize(image, image, new Size(w, h));
-        width = w;
-
+    public void reshape(int w, int h) throws IOException {
+        Mat mat = Picture2Mat(this);
+        Imgproc.resize(mat, mat, new Size(w, h));
+        Picture picture = Mat2Picture(mat);
+        width = picture.width;
+        height = picture.height;
+        image = picture.image;
     }
+
 
     /** Return Picture object converted from Mat object.*/
     public static Picture Mat2Picture(Mat m) throws IOException {
@@ -341,6 +346,16 @@ public final class Picture implements ActionListener {
         Picture pic = new Picture(w, h);
         pic.image = bufImage;
         return pic;
+    }
+
+    /** Return Mat object converted from Picture object.*/
+    public static Mat Picture2Mat(Picture pic) {
+        int w = pic.width;
+        int h = pic.height;
+        Mat mat = new Mat(h, w, CvType.CV_8UC3);
+        byte[] data = ((DataBufferByte) pic.image.getRaster().getDataBuffer()).getData();
+        mat.put(0, 0, data);
+        return mat;
     }
 
 }
