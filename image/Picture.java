@@ -19,6 +19,12 @@ package image;
  *
  *************************************************************************/
 
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
 import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Toolkit;
@@ -26,8 +32,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -70,7 +78,8 @@ public final class Picture implements ActionListener {
     /** Location of origin. */
     private boolean isOriginUpperLeft = true;
     /** Width and height. */
-    private final int width, height;
+    private int width;
+    private int height;
 
    /** Initializes a blank W by H picture, where each pixel is black. */
     public Picture(int w, int h) {
@@ -311,6 +320,27 @@ public final class Picture implements ActionListener {
         Picture pic = new Picture(args[0]);
         System.out.printf("%d-by-%d\n", pic.width(), pic.height());
         pic.show();
+    }
+
+    public void reshape(int w, int h) {
+        BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        //image = Imgproc.resize(image, image, new Size(w, h));
+        width = w;
+
+    }
+
+    /** Return Picture object converted from Mat object.*/
+    public static Picture Mat2Picture(Mat m) throws IOException {
+        int w = m.width();
+        int h = m.height();
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".jpg", m, matOfByte);
+        byte[] byteArray = matOfByte.toArray();
+        InputStream in = new ByteArrayInputStream(byteArray);
+        BufferedImage bufImage = ImageIO.read(in);
+        Picture pic = new Picture(w, h);
+        pic.image = bufImage;
+        return pic;
     }
 
 }
