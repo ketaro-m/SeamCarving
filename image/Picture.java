@@ -101,7 +101,7 @@ public final class Picture implements ActionListener {
     public Picture(Picture pic) {
         width = pic.width();
         height = pic.height();
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(width, height, pic.image.getType());
         filename = pic.filename;
         for (int x = 0; x < width(); x += 1) {
             for (int y = 0; y < height(); y += 1) {
