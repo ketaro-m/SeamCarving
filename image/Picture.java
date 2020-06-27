@@ -19,6 +19,13 @@ package image;
  *
  *************************************************************************/
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
 import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Toolkit;
@@ -26,8 +33,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -70,10 +80,11 @@ public final class Picture implements ActionListener {
     /** Location of origin. */
     private boolean isOriginUpperLeft = true;
     /** Width and height. */
-    private final int width, height;
+    private int width;
+    private int height;
 
    /** Initializes a blank W by H picture, where each pixel is black. */
-    public Picture(int w, int h) {
+    public Picture(int w, int h, int imageType) {
         if (w < 0) {
             throw new IllegalArgumentException("width must be nonnegative");
         }
@@ -82,7 +93,7 @@ public final class Picture implements ActionListener {
         }
         width = w;
         height = h;
-        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(w, h, imageType);
         filename = w + "-by-" + h;
     }
 
@@ -90,7 +101,7 @@ public final class Picture implements ActionListener {
     public Picture(Picture pic) {
         width = pic.width();
         height = pic.height();
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(width, height, pic.image.getType());
         filename = pic.filename;
         for (int x = 0; x < width(); x += 1) {
             for (int y = 0; y < height(); y += 1) {
@@ -311,6 +322,45 @@ public final class Picture implements ActionListener {
         Picture pic = new Picture(args[0]);
         System.out.printf("%d-by-%d\n", pic.width(), pic.height());
         pic.show();
+    }
+
+    public void reshape(int w, int h) throws IOException {
+        Mat mat = Picture2Mat(this);
+        Imgproc.resize(mat, mat, new Size(w, h));
+        Picture picture = Mat2Picture(mat);
+        width = picture.width;
+        height = picture.height;
+        image = picture.image;
+    }
+
+
+    /** Return Picture object converted from Mat object.*/
+    public static Picture Mat2Picture(Mat m) throws IOException {
+        int w = m.width();
+        int h = m.height();
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".jpg", m, matOfByte);
+        byte[] byteArray = matOfByte.toArray();
+        InputStream in = new ByteArrayInputStream(byteArray);
+        BufferedImage bufImage = ImageIO.read(in);
+        Picture pic = new Picture(w, h, BufferedImage.TYPE_3BYTE_BGR);
+        pic.image = bufImage;
+        return pic;
+    }
+
+    /** Return Mat object converted from Picture object.*/
+    public static Mat Picture2Mat(Picture pic) {
+        int w = pic.width;
+        int h = pic.height;
+        Mat mat = new Mat(h, w, CvType.CV_8UC3);
+        byte[] data = ((DataBufferByte) pic.image.getRaster().getDataBuffer()).getData();
+        mat.put(0, 0, data);
+        return mat;
+    }
+
+    /** Return the image type of its BufferedImage.*/
+    public int getType() {
+        return image.getType();
     }
 
 }

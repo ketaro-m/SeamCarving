@@ -102,7 +102,7 @@ public class Rescaler {
     /** Remove specified vertical SEAM from picture. */
     public void removeVerticalSeam(int[] seam) {
         /* Remove pixels with coordinates (seam[r], r). */
-        Picture resizedPic = new Picture(width() - 1, height());
+        Picture resizedPic = new Picture(width() - 1, height(), pic.getType());
         for (int r = 0; r < height(); r += 1) {
             int k = 0;
             for (int c = 0; c < width(); c += 1) {
@@ -118,7 +118,7 @@ public class Rescaler {
 
     /** Transpose the image inside this Rescaler. */
     private void transpose() {
-        Picture transposed = new Picture(pic.height(), pic.width());
+        Picture transposed = new Picture(pic.height(), pic.width(), pic.getType());
 
         for (int c = 0; c < pic.width(); c += 1) {
             for (int r = 0; r < pic.height(); r += 1) {
