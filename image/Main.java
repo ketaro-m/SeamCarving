@@ -1,9 +1,17 @@
 package image;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.CvType;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.*;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 public class Main {
     // Compulsory
@@ -12,24 +20,13 @@ public class Main {
     /** Assuming ARGS is { image filename, # rows to remove,
      *  # columns to remove), display the image in filename with the
      *  indicated numbers of rows and columns removed. */
-    public static void main(String[] args) {
-        System.out.println("Welcome to OpenCV " + Core.VERSION);
-        Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
-        System.out.println("OpenCV Mat: " + m);
-        Mat mr1 = m.row(1);
-        mr1.setTo(new Scalar(1));
-        Mat mc5 = m.col(5);
-        mc5.setTo(new Scalar(5));
-        System.out.println("OpenCV Mat data:\n" + m.dump());
-        if (args.length != 3) {
-            System.out.println("Usage:\njava image.Rescaler [image filename]"
-                    + " [num rows to remove]"
-                    + " [num columns to remove]");
-            return;
-        }
+    public static void main(String[] args) throws IOException {
 
         Picture inputImg = new Picture(args[0]);
-        inputImg.show();
+
+        Picture raw = new Picture(inputImg);
+        show(raw);
+
         int removeColumns = Integer.parseInt(args[1]);
         int removeRows = Integer.parseInt(args[2]);
 
@@ -49,8 +46,29 @@ public class Main {
         System.out.printf("New image size is %d columns by %d rows\n",
                 sc.width(), sc.height());
 
+        show(sc.getPic());
 
-        inputImg.show();
-        sc.getPic().show();
+        sc.getPic().save("example/output.jpg");
+    }
+
+    /** Show reshaped pictures with not destructing the original images.*/
+    private static void show(Picture pic) throws IOException {
+        final int W = 1000;
+        final int H = 600;
+        Picture pic2 = new Picture(pic);
+        int width = pic2.width();
+        int height = pic2.height();
+        if (width > W || height > H) {
+            if (width > W) {
+                height = height * W / width;
+                width = W;
+            }
+            if (height > H) {
+                width = width * H / height;
+                height = H;
+            }
+            pic2.reshape(width, height);
+        }
+        pic2.show();
     }
 }

@@ -84,7 +84,7 @@ public final class Picture implements ActionListener {
     private int height;
 
    /** Initializes a blank W by H picture, where each pixel is black. */
-    public Picture(int w, int h) {
+    public Picture(int w, int h, int imageType) {
         if (w < 0) {
             throw new IllegalArgumentException("width must be nonnegative");
         }
@@ -93,7 +93,7 @@ public final class Picture implements ActionListener {
         }
         width = w;
         height = h;
-        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(w, h, imageType);
         filename = w + "-by-" + h;
     }
 
@@ -343,7 +343,7 @@ public final class Picture implements ActionListener {
         byte[] byteArray = matOfByte.toArray();
         InputStream in = new ByteArrayInputStream(byteArray);
         BufferedImage bufImage = ImageIO.read(in);
-        Picture pic = new Picture(w, h);
+        Picture pic = new Picture(w, h, BufferedImage.TYPE_3BYTE_BGR);
         pic.image = bufImage;
         return pic;
     }
@@ -356,6 +356,11 @@ public final class Picture implements ActionListener {
         byte[] data = ((DataBufferByte) pic.image.getRaster().getDataBuffer()).getData();
         mat.put(0, 0, data);
         return mat;
+    }
+
+    /** Return the image type of its BufferedImage.*/
+    public int getType() {
+        return image.getType();
     }
 
 }
