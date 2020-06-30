@@ -6,10 +6,13 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.*;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Scanner;
 
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
@@ -23,9 +26,35 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Picture inputImg = new Picture(args[0]);
-        show(inputImg);
-
         int width = inputImg.width(), height = inputImg.height();
+        System.out.printf("Original image is %d columns by %d rows\n",
+                width, height);
+
+
+        Picture inputImg2 = show(inputImg);
+        int small = Math.min(inputImg2.width(), inputImg2.height());
+        DragRegion dr = new DragRegion("Drag regions you want to preserve.", inputImg2);
+        dr.setVisible(true);
+        dr.setRadius(small / 50);
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            String readString = scanner.nextLine();
+            if (readString.isEmpty()) {
+                break;
+            } else if (readString.equals("s")) {
+                dr.setRadius(small / 100);
+            } else if (readString.equals("m")) {
+                dr.setRadius(small / 50);
+            } else if (readString.equals("l")) {
+                dr.setRadius(small / 20);
+            } else if (readString.equals("+")) {
+                dr.setMode(1);
+            } else if (readString.equals("-")) {
+                dr.setMode(-1);
+            }
+        }
+        Imgproc.resize(inputImg2.getEnergyMat(), inputImg.getEnergyMat(), new Size(width, height));
+
 
         int w = Integer.parseInt(args[1]);
         int h = Integer.parseInt(args[2]);
@@ -33,8 +62,6 @@ public class Main {
         int removeColumns = Math.max(width - height * w / h, 0);
         int removeRows = height - (width - removeColumns) * h / w;
 
-        System.out.printf("Original image is %d columns by %d rows\n",
-                inputImg.width(), inputImg.height());
 
         Rescaler sc = new Rescaler(inputImg);
 
@@ -58,7 +85,7 @@ public class Main {
     }
 
     /** Show reshaped pictures with not destructing the original images.*/
-    private static void show(Picture pic) throws IOException {
+    private static Picture show(Picture pic) throws IOException {
         final int W = 1000;
         final int H = 600;
         Picture pic2 = new Picture(pic);
@@ -76,5 +103,6 @@ public class Main {
             pic2.reshape(width, height);
         }
         pic2.show();
+        return pic2;
     }
 }

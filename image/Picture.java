@@ -82,6 +82,8 @@ public final class Picture implements ActionListener {
     /** Width and height. */
     private int width;
     private int height;
+    /** Energy matrix for not removing. */
+    private Mat energyMat;
 
    /** Initializes a blank W by H picture, where each pixel is black. */
     public Picture(int w, int h, int imageType) {
@@ -95,6 +97,7 @@ public final class Picture implements ActionListener {
         height = h;
         image = new BufferedImage(w, h, imageType);
         filename = w + "-by-" + h;
+        energyMat = new Mat(h, w, CvType.CV_32F);
     }
 
    /** Initializes a new picture that is a deep copy of PIC.  */
@@ -103,9 +106,11 @@ public final class Picture implements ActionListener {
         height = pic.height();
         image = new BufferedImage(width, height, pic.image.getType());
         filename = pic.filename;
+        energyMat = new Mat(height, width, CvType.CV_32F);
         for (int x = 0; x < width(); x += 1) {
             for (int y = 0; y < height(); y += 1) {
                 image.setRGB(x, y, pic.get(x, y).getRGB());
+                energyMat.put(y, x, pic.energyMat.get(y, x)[0]);
             }
         }
     }
@@ -130,6 +135,7 @@ public final class Picture implements ActionListener {
         } catch (IOException e) {
             throw new RuntimeException("Could not open file: " + name);
         }
+        energyMat = new Mat(height, width, CvType.CV_32F);
     }
 
     /** Initializes a picture by reading in a .png, .gif, or .jpg from FILE. */
@@ -146,6 +152,7 @@ public final class Picture implements ActionListener {
         width  = image.getWidth(null);
         height = image.getHeight(null);
         filename = file.getName();
+        energyMat = new Mat(height, width, CvType.CV_32F);
     }
 
    /** Returns a JLabel containing this picture, for embedding in a JPanel,
@@ -331,6 +338,8 @@ public final class Picture implements ActionListener {
         width = picture.width;
         height = picture.height;
         image = picture.image;
+
+        Imgproc.resize(energyMat, energyMat, new Size(w, h));
     }
 
 
@@ -363,4 +372,83 @@ public final class Picture implements ActionListener {
         return image.getType();
     }
 
+
+    /** Change to grayscale at the position of (X, Y) with a circle.
+     * Implement Midpoint Circle Algorithm.*/
+    public void mark(int X, int Y, int r, int mode) {
+        int ENERGY = Rescaler.BORDER_ENERGY / 2;
+        int x = 0, y = r;
+        int p = 1 - r;
+        while (x <= y) {
+            for (int i = y; i >= -y; i -= 1) {
+                if (i + Y < 0 || i + Y >= height()) {
+                    continue;
+                }
+                if (!(x + X < 0 || x + X >= width())) {
+                    set(x + X, i + Y, heatOrCool(x + X, i + Y, mode));
+                    energyMat.put(i + Y, x + X, mode * ENERGY);
+                }
+                if (!(-x + X < 0 || -x + X >= width())) {
+                    Color color = get(-x + X, i + Y);
+                    set(-x + X, i + Y, heatOrCool(-x + X, i + Y, mode));
+                    energyMat.put(i + Y, -x + X, mode * ENERGY);
+                }
+            }
+            for (int i = x; i >= -x; i -= 1) {
+                if (i + Y < 0 || i + Y >= height()) {
+                    continue;
+                }
+                if (!(y + X < 0 || y + X >= width())) {
+                    Color color = get(y + X, i + Y);
+                    set(y + X, i + Y, heatOrCool(y + X, i + Y, mode));
+                    energyMat.put(i + Y, y + X, mode * ENERGY);
+                }
+                if (!(-y + X < 0 || -y + X >= width())) {
+                    Color color = get(-y + X, i + Y);
+                    set(-y + X, i + Y, heatOrCool(-y + X, i + Y, mode));
+                    energyMat.put(i + Y, -y + X, mode * ENERGY);
+                }
+            }
+
+            if (p < 0) {
+                p = p + 2 * x + 3;
+            } else {
+                p = p + 2 * (x - y) + 5;
+                y -= 1;
+            }
+            x += 1;
+        }
+
+    }
+
+    /** Return color changed to red or blue at the position (X, Y).
+     * MODE: 1 = red, -1 = blue. */
+    private Color heatOrCool(int x, int y, int mode) {
+        Color color = get(x, y);
+        Color color2;
+        if (mode == 1) {
+            color2 = new Color(255, color.getGreen(), color.getBlue());
+        } else {
+            color2 = new Color(color.getRed(), color.getGreen(), 255);
+        }
+        return color2;
+    }
+
+
+    public void grayScale() {
+        BufferedImage grayImage = new BufferedImage(width, height, image.getType());
+        for (int i = 0; i < width; i += 1) {
+            for (int j = 0; j < height; j += 1) {
+                Color c = get(i, j);
+                int gray = (int) (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114);
+                grayImage.setRGB(i, j, new Color(gray, gray, gray).getRGB());
+            }
+        }
+        image = grayImage;
+    }
+
+    /** Return the Energy matrix. */
+    public Mat getEnergyMat() {
+        return energyMat;
+    }
 }
