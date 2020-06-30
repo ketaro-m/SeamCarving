@@ -83,7 +83,7 @@ public final class Picture implements ActionListener {
     private int width;
     private int height;
     /** Energy matrix for not removing. */
-    private double[][] em;
+    private Mat energyMat;
 
    /** Initializes a blank W by H picture, where each pixel is black. */
     public Picture(int w, int h, int imageType) {
@@ -97,7 +97,7 @@ public final class Picture implements ActionListener {
         height = h;
         image = new BufferedImage(w, h, imageType);
         filename = w + "-by-" + h;
-        em = new double[width][height];
+        energyMat = new Mat(h, w, CvType.CV_32F);
     }
 
    /** Initializes a new picture that is a deep copy of PIC.  */
@@ -106,12 +106,13 @@ public final class Picture implements ActionListener {
         height = pic.height();
         image = new BufferedImage(width, height, pic.image.getType());
         filename = pic.filename;
+        energyMat = new Mat(height, width, CvType.CV_32F);
         for (int x = 0; x < width(); x += 1) {
             for (int y = 0; y < height(); y += 1) {
                 image.setRGB(x, y, pic.get(x, y).getRGB());
+                energyMat.put(y, x, pic.energyMat.get(y, x)[0]);
             }
         }
-        em = new double[width][height];
     }
 
    /** Initializes a picture by reading in a .png, .gif, or .jpg from
@@ -134,7 +135,7 @@ public final class Picture implements ActionListener {
         } catch (IOException e) {
             throw new RuntimeException("Could not open file: " + name);
         }
-        em = new double[width][height];
+        energyMat = new Mat(height, width, CvType.CV_32F);
     }
 
     /** Initializes a picture by reading in a .png, .gif, or .jpg from FILE. */
@@ -151,7 +152,7 @@ public final class Picture implements ActionListener {
         width  = image.getWidth(null);
         height = image.getHeight(null);
         filename = file.getName();
-        em = new double[width][height];
+        energyMat = new Mat(height, width, CvType.CV_32F);
     }
 
    /** Returns a JLabel containing this picture, for embedding in a JPanel,
@@ -337,6 +338,8 @@ public final class Picture implements ActionListener {
         width = picture.width;
         height = picture.height;
         image = picture.image;
+
+        Imgproc.resize(energyMat, energyMat, new Size(w, h));
     }
 
 
@@ -384,11 +387,11 @@ public final class Picture implements ActionListener {
                 }
                 if (!(x + X < 0 || x + X >= width())) {
                     set(x + X, i + Y, c);
-                    em[x + X][i + Y] = ENERGY;
+                    energyMat.put(i + Y, x + X, ENERGY);
                 }
                 if (!(-x + X < 0 || -x + X >= width())) {
                     set(-x + X, i + Y, c);
-                    em[-x + X][i + Y] = ENERGY;
+                    energyMat.put(i + Y, -x + X, ENERGY);
                 }
             }
             for (int i = x; i >= -x; i -= 1) {
@@ -397,11 +400,11 @@ public final class Picture implements ActionListener {
                 }
                 if (!(y + X < 0 || y + X >= width())) {
                     set(y + X, i + Y, c);
-                    em[y + X][i + Y] = ENERGY;
+                    energyMat.put(i + Y, y + X, ENERGY);
                 }
                 if (!(-y + X < 0 || -y + X >= width())) {
                     set(-y + X, i + Y, c);
-                    em[-y + X][i + Y] = ENERGY;
+                    energyMat.put(i + Y, -y + X, ENERGY);
                 }
             }
 
@@ -427,5 +430,10 @@ public final class Picture implements ActionListener {
             }
         }
         image = grayImage;
+    }
+
+    /** Return the Energy matrix. */
+    public Mat getEnergyMat() {
+        return energyMat;
     }
 }

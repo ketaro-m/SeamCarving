@@ -26,8 +26,9 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Picture inputImg = new Picture(args[0]);
+        int width = inputImg.width(), height = inputImg.height();
         System.out.printf("Original image is %d columns by %d rows\n",
-                inputImg.width(), inputImg.height());
+                width, height);
 
 
         Picture inputImg2 = show(inputImg);
@@ -48,8 +49,8 @@ public class Main {
                 dr.setRadius(small / 20);
             }
         }
+        Imgproc.resize(inputImg2.getEnergyMat(), inputImg.getEnergyMat(), new Size(width, height));
 
-        int width = inputImg.width(), height = inputImg.height();
 
         int w = Integer.parseInt(args[1]);
         int h = Integer.parseInt(args[2]);

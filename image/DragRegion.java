@@ -33,7 +33,6 @@ public class DragRegion extends JFrame implements MouseMotionListener, MouseList
     public void mouseDragged(MouseEvent e) {
         int x = e.getX(), y = e.getY();
         picture.mark(x, y, radius);
-        //picture.show();
         repaint();
     }
 
