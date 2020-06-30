@@ -1,5 +1,8 @@
 package image;
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+
 import java.util.Arrays;
 import java.awt.Color;
 
@@ -72,7 +75,7 @@ public class Rescaler {
         double[][] energyMatrix = new double[height()][width()];
         for (int c = 0; c < width(); c += 1) {
             for (int r = 0; r < height(); r += 1) {
-                energyMatrix[r][c] = energy(c, r);
+                energyMatrix[r][c] = energy(c, r) + pic.getEnergyMat().get(r, c)[0];
             }
         }
 
@@ -108,6 +111,7 @@ public class Rescaler {
             for (int c = 0; c < width(); c += 1) {
                 if (c != seam[r]) {
                     resizedPic.set(k, r, pic.get(c, r));
+                    resizedPic.getEnergyMat().put(r, k, pic.getEnergyMat().get(r, c)[0]);
                     k += 1;
                 }
             }
@@ -123,6 +127,7 @@ public class Rescaler {
         for (int c = 0; c < pic.width(); c += 1) {
             for (int r = 0; r < pic.height(); r += 1) {
                 transposed.set(r, c, pic.get(c, r));
+                transposed.getEnergyMat().put(c, r, pic.getEnergyMat().get(r, c)[0]);
             }
         }
 
