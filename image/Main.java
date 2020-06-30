@@ -1,20 +1,9 @@
 package image;
 
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.*;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Scanner;
-
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 public class Main {
     // Compulsory
@@ -53,6 +42,7 @@ public class Main {
                 dr.setMode(-1);
             }
         }
+        System.out.println("Rescaling...");
         Imgproc.resize(inputImg2.getEnergyMat(), inputImg.getEnergyMat(), new Size(width, height));
 
 
