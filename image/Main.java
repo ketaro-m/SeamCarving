@@ -47,6 +47,10 @@ public class Main {
                 dr.setRadius(small / 50);
             } else if (readString.equals("l")) {
                 dr.setRadius(small / 20);
+            } else if (readString.equals("+")) {
+                dr.setMode(1);
+            } else if (readString.equals("-")) {
+                dr.setMode(-1);
             }
         }
         Imgproc.resize(inputImg2.getEnergyMat(), inputImg.getEnergyMat(), new Size(width, height));

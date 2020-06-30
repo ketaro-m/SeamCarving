@@ -9,6 +9,8 @@ public class DragRegion extends JFrame implements MouseMotionListener, MouseList
 
     private Picture picture;
     private int radius;
+    /** Mode for preserve or destroy.*/
+    private int mode;
 
     public DragRegion(String title, Picture picture) {
         super(title);
@@ -20,6 +22,7 @@ public class DragRegion extends JFrame implements MouseMotionListener, MouseList
 
         this.picture = picture;
         radius = 0;
+        mode = 1;
 
         addMouseMotionListener(this);
         addMouseListener(this);
@@ -29,10 +32,14 @@ public class DragRegion extends JFrame implements MouseMotionListener, MouseList
         radius = r;
     }
 
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
     @Override
     public void mouseDragged(MouseEvent e) {
         int x = e.getX(), y = e.getY();
-        picture.mark(x, y, radius);
+        picture.mark(x, y, radius, mode);
         repaint();
     }
 

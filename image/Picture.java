@@ -375,23 +375,23 @@ public final class Picture implements ActionListener {
 
     /** Change to grayscale at the position of (X, Y) with a circle.
      * Implement Midpoint Circle Algorithm.*/
-    public void mark(int X, int Y, int r) {
-        int ENERGY = Rescaler.BORDER_ENERGY;
+    public void mark(int X, int Y, int r, int mode) {
+        int ENERGY = Rescaler.BORDER_ENERGY / 2;
         int x = 0, y = r;
         int p = 1 - r;
-        Color c = new Color(0, 255, 0);
         while (x <= y) {
             for (int i = y; i >= -y; i -= 1) {
                 if (i + Y < 0 || i + Y >= height()) {
                     continue;
                 }
                 if (!(x + X < 0 || x + X >= width())) {
-                    set(x + X, i + Y, c);
-                    energyMat.put(i + Y, x + X, ENERGY);
+                    set(x + X, i + Y, heatOrCool(x + X, i + Y, mode));
+                    energyMat.put(i + Y, x + X, mode * ENERGY);
                 }
                 if (!(-x + X < 0 || -x + X >= width())) {
-                    set(-x + X, i + Y, c);
-                    energyMat.put(i + Y, -x + X, ENERGY);
+                    Color color = get(-x + X, i + Y);
+                    set(-x + X, i + Y, heatOrCool(-x + X, i + Y, mode));
+                    energyMat.put(i + Y, -x + X, mode * ENERGY);
                 }
             }
             for (int i = x; i >= -x; i -= 1) {
@@ -399,12 +399,14 @@ public final class Picture implements ActionListener {
                     continue;
                 }
                 if (!(y + X < 0 || y + X >= width())) {
-                    set(y + X, i + Y, c);
-                    energyMat.put(i + Y, y + X, ENERGY);
+                    Color color = get(y + X, i + Y);
+                    set(y + X, i + Y, heatOrCool(y + X, i + Y, mode));
+                    energyMat.put(i + Y, y + X, mode * ENERGY);
                 }
                 if (!(-y + X < 0 || -y + X >= width())) {
-                    set(-y + X, i + Y, c);
-                    energyMat.put(i + Y, -y + X, ENERGY);
+                    Color color = get(-y + X, i + Y);
+                    set(-y + X, i + Y, heatOrCool(-y + X, i + Y, mode));
+                    energyMat.put(i + Y, -y + X, mode * ENERGY);
                 }
             }
 
@@ -417,6 +419,19 @@ public final class Picture implements ActionListener {
             x += 1;
         }
 
+    }
+
+    /** Return color changed to red or blue at the position (X, Y).
+     * MODE: 1 = red, -1 = blue. */
+    private Color heatOrCool(int x, int y, int mode) {
+        Color color = get(x, y);
+        Color color2;
+        if (mode == 1) {
+            color2 = new Color(255, color.getGreen(), color.getBlue());
+        } else {
+            color2 = new Color(color.getRed(), color.getGreen(), 255);
+        }
+        return color2;
     }
 
 
