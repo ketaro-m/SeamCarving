@@ -45,6 +45,16 @@ public class Main {
         System.out.println("Rescaling...");
         Imgproc.resize(inputImg2.getEnergyMat(), inputImg.getEnergyMat(), new Size(width, height));
 
+        for (int h = 0; h < inputImg.getEnergyMat().height(); h += 1) {
+            for (int w = 0; w < inputImg.getEnergyMat().width(); w += 1) {
+                if (inputImg.getEnergyMat().get(h, w)[0] > 0) {
+                    inputImg.set(w, h, inputImg.heatOrCool(w, h, 1));
+                } else if (inputImg.getEnergyMat().get(h, w)[0] < 0) {
+                    inputImg.set(w, h, inputImg.heatOrCool(w, h, -1));
+                }
+            }
+        }
+
 
         int w = Integer.parseInt(args[1]);
         int h = Integer.parseInt(args[2]);
@@ -67,11 +77,6 @@ public class Main {
                 sc.width(), sc.height());
 
         show(sc.getPic());
-
-        String extension = args[0].substring(args[0].lastIndexOf("."));
-        String fname = args[0].substring(0, args[0].lastIndexOf("."));
-        fname = fname + "-" + args[1] + "-by-" + args[2];
-        sc.getPic().save(fname + extension);
     }
 
     /** Show reshaped pictures with not destructing the original images.*/

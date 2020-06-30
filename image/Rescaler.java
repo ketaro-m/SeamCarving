@@ -20,6 +20,7 @@ public class Rescaler {
     /** A rescaler that operates on PICTURE. */
     public Rescaler(Picture picture) {
         pic = new Picture(picture);
+        pic.show();
     }
 
     /** Return the width of my picture. */
@@ -99,6 +100,12 @@ public class Rescaler {
            MatrixUtils.Orientation.VERTICAL);
         int[] hseam = MatrixUtils.findSeam(cem,
           MatrixUtils.Orientation.VERTICAL);
+        int y = 0;
+        for (int x: hseam) {
+            pic.set(x, y, new Color(255, 0, 0));
+            y += 1;
+        }
+        pic.show();
         removeVerticalSeam(hseam);
     }
 
@@ -118,6 +125,7 @@ public class Rescaler {
         }
 
         pic = resizedPic;
+        pic.show();
     }
 
     /** Transpose the image inside this Rescaler. */
