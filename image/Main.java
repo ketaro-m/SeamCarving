@@ -44,17 +44,7 @@ public class Main {
         }
         System.out.println("Rescaling...");
         Imgproc.resize(inputImg2.getEnergyMat(), inputImg.getEnergyMat(), new Size(width, height));
-
-        for (int h = 0; h < inputImg.getEnergyMat().height(); h += 1) {
-            for (int w = 0; w < inputImg.getEnergyMat().width(); w += 1) {
-                if (inputImg.getEnergyMat().get(h, w)[0] > 0) {
-                    inputImg.set(w, h, inputImg.heatOrCool(w, h, 1));
-                } else if (inputImg.getEnergyMat().get(h, w)[0] < 0) {
-                    inputImg.set(w, h, inputImg.heatOrCool(w, h, -1));
-                }
-            }
-        }
-
+        
 
         int w = Integer.parseInt(args[1]);
         int h = Integer.parseInt(args[2]);
