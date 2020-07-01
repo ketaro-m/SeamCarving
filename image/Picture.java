@@ -423,7 +423,7 @@ public final class Picture implements ActionListener {
 
     /** Return color changed to red or blue at the position (X, Y).
      * MODE: 1 = red, -1 = blue. */
-    private Color heatOrCool(int x, int y, int mode) {
+    public Color heatOrCool(int x, int y, int mode) {
         Color color = get(x, y);
         Color color2;
         if (mode == 1) {
