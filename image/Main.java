@@ -67,11 +67,6 @@ public class Main {
                 sc.width(), sc.height());
 
         show(sc.getPic());
-
-        String extension = args[0].substring(args[0].lastIndexOf("."));
-        String fname = args[0].substring(0, args[0].lastIndexOf("."));
-        fname = fname + "-" + args[1] + "-by-" + args[2];
-        sc.getPic().save(fname + extension);
     }
 
     /** Show reshaped pictures with not destructing the original images.*/
