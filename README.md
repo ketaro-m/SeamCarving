@@ -1,5 +1,5 @@
 # SeamCarving
-Image Resizing by Seam Carving algorithm.
+Image Resizing by [Seam Carving algorithm](https://en.wikipedia.org/wiki/Seam_carving).
 
 ## Description
 Some non-square pictures don't fit SNS profile portraits, and they need to be resized.
@@ -8,7 +8,7 @@ Some non-square pictures don't fit SNS profile portraits, and they need to be re
 <img width="400" alt="fig1.png" src="https://github.com/ketaro-m/SeamCarving/blob/master/fig/fig1.png"><img width="400" alt="fig3.png" src="https://github.com/ketaro-m/SeamCarving/blob/master/fig/fig3.png"> 
 
 ## Demo
-Demo movie -> https://youtu.be/wdoS8mmda70
+Demo movie -> https://youtu.be/alv-BUySOPs
 
 ## Environment
 - macOS Catalina 10.15.5
@@ -30,12 +30,12 @@ brew cask install java
 ```
 
 ## Usage
-First, compile files as following
+First, compile files with the following command
 ```
 $ javac -classpath .:./opencv4/library/opencv-430.jar image/*.java
 ```
   
-then, run the main file. You can input any aspect ratio (width:height) you want.
+then, run the main file. You can input any aspect ratio (width:height).
 ```
 $ java -Djava.library.path=./opencv4/library -classpath .:./opencv4/library/opencv-430.jar: image.Main [filename] [width] [height]
 ```
@@ -58,8 +58,8 @@ Once the program has sucessfully run, the input image will be resized with the a
 
 <img width="600" alt="fig2.png" src="https://github.com/ketaro-m/SeamCarving/blob/master/fig/fig2.png">  
 (Top: Not selecting any region, Buttom: Selecting people to protect)  
-  
-You can save it from File->Save tab at the top.
+<br />
+You can save it from File->Save tab at the top of the image window.
 
 ## Demo mode
 
