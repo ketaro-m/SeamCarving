@@ -16,7 +16,7 @@ Demo movie -> https://youtu.be/alv-BUySOPs
 - [OpenCV](https://opencv.org/) 4.3.0
 
 ## Prerequisite
-intsall Java OpenJDK 13.0.2
+install Java OpenJDK 13.0.2
 
 ```zsh
 # install Homebrew (if needed)
@@ -40,7 +40,7 @@ then, run the main file. You can input any aspect ratio (width:height).
 $ java -Djava.library.path=./opencv4/library -classpath .:./opencv4/library/opencv-430.jar: image.Main [filename] [width] [height]
 ```
 
-In the pop-up window named "Drag regions you want to preserve.", you can manually select partial image areas to protect or destroy by dragging them. 
+In the pop-up window titled "Drag regions you want to preserve.", you can manually select partial image areas to protect or destroy by dragging them. 
 
 <img width="600" alt="fig4.png" src="https://github.com/ketaro-m/SeamCarving/blob/master/fig/fig4.png">
 
@@ -59,7 +59,7 @@ Once the program has sucessfully run, the input image will be resized with the a
 <img width="600" alt="fig2.png" src="https://github.com/ketaro-m/SeamCarving/blob/master/fig/fig2.png">  
 (Top: Not selecting any region, Buttom: Selecting people to protect)  
 <br />
-You can save it from File->Save tab at the top of the image window.
+You can save it from "File->Save" tab at the top of the image window.
 
 ## Demo mode
 
